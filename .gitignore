@@ -1,0 +1,43 @@
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyc.*
+*.py,cover
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Environment variables
+.env
+
+# FastAPI / Temp Files
+*.log
+*.sqlite3
+*.db
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# IDE / Editor
+.vscode/
+.idea/
+
+# Temporary Excel files
+*.xlsx
+*.tmp
+
+# Cache / Testing
+.pytest_cache/
+.coverage
+
+# Build / Dist
+build/
+dist/
+
+.env

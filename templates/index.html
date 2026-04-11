@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AI-MCQ-Generator</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+<div class="container">
+    <div class="card">
+        <h1>AI-Based Question Generator</h1>
+        <p class="subtitle">Generate MCQs & Download Instantly</p>
+
+        <form id="mcqForm">
+
+            <label>Domain</label>
+            <select name="domain" required>
+                <option value="" disabled selected>Select Domain</option>
+
+                <optgroup label="Programming Languages">
+                    <option value="Python">Python</option>
+                    <option value="Java">Java</option>
+                    <option value="PHP Developer">PHP Developer</option>
+                    <option value=".NET Developer">.NET Developer</option>
+                </optgroup>
+
+                <option disabled>──────────────</option>
+
+                <optgroup label="Full Stack / Web Development">
+                    <option value="MERN Developer">MERN Developer</option>
+                </optgroup>
+
+                <option disabled>──────────────</option>
+
+                <optgroup label="AI / Machine Learning">
+                    <option value="Gen-AI Engineer">Gen-AI Engineer</option>
+                    <option value="AI/ML Engineer">AI/ML Engineer</option>
+                </optgroup>
+
+                <option disabled>──────────────</option>
+
+                <optgroup label="Data Engineering">
+                    <option value="Data Engineer">Data Engineer</option>
+                </optgroup>
+
+                <option disabled>──────────────</option>
+
+                <optgroup label="Cloud & DevOps">
+                    <option value="Cloud Engineer">Cloud Engineer</option>
+                    <option value="DevOps">DevOps</option>
+                </optgroup>
+
+                <option disabled>──────────────</option>
+
+                <optgroup label="Testing & QA">
+                    <option value="Quality Assurance">Quality Assurance</option>
+                </optgroup>
+
+                <option disabled>──────────────</option>
+
+                <optgroup label="Business & Support">
+                    <option value="Business Analyst (Tech)">Business Analyst (Tech)</option>
+                    <option value="Technical Support Engineer">Technical Support Engineer</option>
+                </optgroup>
+
+                <option disabled>──────────────</option>
+
+                <optgroup label="Networking">
+                    <option value="Network Engineer">Network Engineer</option>
+                </optgroup>
+            </select>
+
+            <label>Difficulty</label>
+            <select name="difficulty" required>
+                <option>Easy</option>
+                <option>Medium</option>
+                <option>Hard</option>
+            </select>
+
+            <label>Total Questions</label>
+            <input type="number" name="num_questions" value="10" min="10" max="100" required>
+
+            <button type="submit" id="generateBtn">Generate & Download</button>
+        </form>
+    </div>
+</div>
+
+<!-- LOADER -->
+<div id="loader" class="loader hidden">
+    <div class="spinner"></div>
+
+    <div class="progress-container">
+        <div id="progressBar" class="progress-bar"></div>
+    </div>
+
+    <p id="progressText">Starting...</p>
+</div>
+
+<script>
+const form = document.getElementById("mcqForm");
+const loader = document.getElementById("loader");
+const btn = document.getElementById("generateBtn");
+
+const progressBar = document.getElementById("progressBar");
+const progressText = document.getElementById("progressText");
+
+let progress = 0;
+
+const stages = [
+    { limit: 20, text: "Analyzing topics..." },
+    { limit: 50, text: "Generating MCQs..." },
+    { limit: 75, text: "Validating questions..." },
+    { limit: 95, text: "Preparing Excel file..." },
+    { limit: 100, text: "Downloading..." }
+];
+
+function simulateProgress() {
+    return setInterval(() => {
+        if (progress < 95) {
+            progress += Math.random() * 5;
+            updateUI(progress);
+        }
+    }, 300);
+}
+
+function updateUI(value) {
+    progressBar.style.width = value + "%";
+
+    for (let stage of stages) {
+        if (value <= stage.limit) {
+            progressText.innerText = stage.text;
+            break;
+        }
+    }
+}
+
+form.addEventListener("submit", async function (e) {
+    e.preventDefault();
+
+    loader.classList.remove("hidden");
+    btn.disabled = true;
+    btn.innerText = "Generating...";
+
+    progress = 0;
+    const interval = simulateProgress();
+
+    const formData = new FormData(form);
+
+    try {
+        const response = await fetch("/api/v1/mcq/generate-download", {
+            method: "POST",
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error("Server error");
+        }
+
+        const blob = await response.blob();
+
+        //  Extract filename from backend
+        const contentDisposition = response.headers.get("Content-Disposition");
+
+        let filename = "mcqs.xlsx";
+
+        if (contentDisposition && contentDisposition.includes("filename")) {
+            const match = contentDisposition.match(/filename="?(.+)"?/);
+            if (match) {
+                filename = match[1];
+            }
+        }
+
+        // Safety fix
+        if (!filename.endsWith(".xlsx")) {
+            filename += ".xlsx";
+        }
+
+        // Download
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+
+        a.href = url;
+        a.setAttribute("download", filename);
+
+        document.body.appendChild(a);
+        a.click();
+
+        setTimeout(() => {
+            window.URL.revokeObjectURL(url);
+            a.remove();
+        }, 100);
+
+        clearInterval(interval);
+        updateUI(100);
+        progressText.innerText = "Download Complete 🎉";
+
+    } catch (err) {
+        progressText.innerText = "Error occurred ❌";
+    } finally {
+        setTimeout(() => {
+            loader.classList.add("hidden");
+            btn.disabled = false;
+            btn.innerText = "Generate & Download";
+            progressBar.style.width = "0%";
+        }, 1500);
+    }
+});
+</script>
+
+</body>
+</html>
