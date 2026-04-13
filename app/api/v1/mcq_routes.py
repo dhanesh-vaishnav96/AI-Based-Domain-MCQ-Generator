@@ -111,7 +111,7 @@ def generate_and_download(
     )
 
     response.headers["Content-Disposition"] = f'attachment; filename="{filename}"'
-
+    
     # SAFE CLEANUP 
     def cleanup():
         if os.path.exists(file_path):

@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <title>AI-MCQ-Generator</title>
-    <link rel="stylesheet" href="/static/style.css">
+
+    <!-- CACHE FIX -->
+    <link rel="stylesheet" href="/static/style.css?v=5">
 </head>
 
 <body>
@@ -17,10 +19,10 @@
 
             <label>Domain</label>
             <select name="domain" required>
-                <option value="" disabled>Select Domain</option>
+                <option value="" disabled selected>Select Domain</option>
 
                 <optgroup label="Programming Languages">
-                    <option value="Python" selected>Python</option>
+                    <option value="Python">Python</option>
                     <option value="Java">Java</option>
                     <option value="PHP Developer">PHP Developer</option>
                     <option value=".NET Developer">.NET Developer</option>
@@ -60,9 +62,10 @@
 
             <label>Difficulty</label>
             <select name="difficulty" required>
-                <option>Easy</option>
-                <option selected>Medium</option>
-                <option>Hard</option>
+                <option value="" disabled selected>Select Difficulty</option>
+                <option value="Easy">Easy</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard</option>
             </select>
 
             <label>Total Questions</label>
@@ -76,15 +79,15 @@
     </div>
 </div>
 
-<!-- LOADER -->
-<div id="loader" class="loader hidden">
+<!-- LOADER (FORCE HIDDEN) -->
+<div id="loader" class="loader hidden" style="display:none;">
     <div class="spinner"></div>
 
     <div class="progress-container">
         <div id="progressBar" class="progress-bar"></div>
     </div>
 
-    <p id="progressText">Starting...</p>
+    <p id="progressText">Initializing...</p>
 </div>
 
 <script>
@@ -99,23 +102,35 @@ const progressText = document.getElementById("progressText");
 let progress = 0;
 let interval = null;
 
+/* FORCE loader hidden on page load */
+document.addEventListener("DOMContentLoaded", function () {
+    loader.classList.add("hidden");
+    loader.style.display = "none";
+});
+
+/* Progress stages */
 const stages = [
-    { limit: 20, text: "Analyzing topics..." },
-    { limit: 50, text: "Generating MCQs..." },
-    { limit: 75, text: "Validating questions..." },
-    { limit: 95, text: "Preparing Excel file..." },
-    { limit: 100, text: "Downloading..." }
+    { limit: 20, text: "Connecting to server..." },
+    { limit: 40, text: "Analyzing topics..." },
+    { limit: 65, text: "Generating MCQs..." },
+    { limit: 85, text: "Validating questions..." },
+    { limit: 100, text: "Creating Excel file..." }
 ];
 
+/* Smooth progress */
 function simulateProgress() {
+    progress = 10;
+    updateUI(progress);
+
     return setInterval(() => {
-        if (progress < 95) {
-            progress += Math.random() * 5;
+        if (progress < 90) {
+            progress += 2;
             updateUI(progress);
         }
-    }, 300);
+    }, 500);
 }
 
+/* Update UI */
 function updateUI(value) {
     progressBar.style.width = value + "%";
 
@@ -127,14 +142,19 @@ function updateUI(value) {
     }
 }
 
+/* Form submit */
 form.addEventListener("submit", async function (e) {
     e.preventDefault();
 
+    /* SHOW LOADER */
     loader.classList.remove("hidden");
+    loader.style.display = "flex";
+
     btn.disabled = true;
     btn.innerText = "Generating...";
 
     statusMessage.classList.add("hidden");
+    statusMessage.classList.remove("status-success", "status-error");
 
     progress = 0;
     interval = simulateProgress();
@@ -153,26 +173,20 @@ form.addEventListener("submit", async function (e) {
 
         const blob = await response.blob();
 
-        const contentDisposition = response.headers.get("Content-Disposition");
         let filename = "mcqs.xlsx";
+        const contentDisposition = response.headers.get("Content-Disposition");
 
         if (contentDisposition && contentDisposition.includes("filename")) {
-            const match = contentDisposition.match(/filename="?(.+)"?/);
-            if (match) {
-                filename = match[1];
-            }
+            const match = contentDisposition.match(/filename="?([^"]+)"?/);
+            if (match) filename = match[1];
         }
 
-        if (!filename.endsWith(".xlsx")) {
-            filename += ".xlsx";
-        }
-
+        /* DOWNLOAD FILE */
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
 
         a.href = url;
         a.setAttribute("download", filename);
-
         document.body.appendChild(a);
         a.click();
 
@@ -181,42 +195,41 @@ form.addEventListener("submit", async function (e) {
             a.remove();
         }, 100);
 
-        // SUCCESS
+        /* SUCCESS */
         clearInterval(interval);
         updateUI(100);
         progressText.innerText = "Download Complete 🎉";
 
         statusMessage.classList.remove("hidden");
-        statusMessage.classList.remove("status-error");
         statusMessage.classList.add("status-success");
         statusMessage.innerText = "Download Complete 🎉";
 
-        setTimeout(() => {
-            resetUI();
-        }, 3000);
+        setTimeout(() => resetUI(), 3000);
 
     } catch (err) {
-        // ERROR
+
+        /* ERROR */
         clearInterval(interval);
         progressText.innerText = "Error occurred ❌";
 
         statusMessage.classList.remove("hidden");
-        statusMessage.classList.remove("status-success");
         statusMessage.classList.add("status-error");
         statusMessage.innerText = "Error occurred ❌";
 
-        setTimeout(() => {
-            resetUI();
-        }, 3500);
+        setTimeout(() => resetUI(), 3500);
     }
 });
 
+/* Reset UI */
 function resetUI() {
     loader.classList.add("hidden");
+    loader.style.display = "none";
+
     btn.disabled = false;
     btn.innerText = "Generate & Download";
+
     progressBar.style.width = "0%";
-    progressText.innerText = "Starting...";
+    progressText.innerText = "Initializing...";
 
     setTimeout(() => {
         statusMessage.classList.add("hidden");
