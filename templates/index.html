@@ -17,55 +17,41 @@
 
             <label>Domain</label>
             <select name="domain" required>
-                <option value="" disabled selected>Select Domain</option>
+                <option value="" disabled>Select Domain</option>
 
                 <optgroup label="Programming Languages">
-                    <option value="Python">Python</option>
+                    <option value="Python" selected>Python</option>
                     <option value="Java">Java</option>
                     <option value="PHP Developer">PHP Developer</option>
                     <option value=".NET Developer">.NET Developer</option>
                 </optgroup>
 
-                <option disabled>──────────────</option>
-
                 <optgroup label="Full Stack / Web Development">
                     <option value="MERN Developer">MERN Developer</option>
                 </optgroup>
-
-                <option disabled>──────────────</option>
 
                 <optgroup label="AI / Machine Learning">
                     <option value="Gen-AI Engineer">Gen-AI Engineer</option>
                     <option value="AI/ML Engineer">AI/ML Engineer</option>
                 </optgroup>
 
-                <option disabled>──────────────</option>
-
                 <optgroup label="Data Engineering">
                     <option value="Data Engineer">Data Engineer</option>
                 </optgroup>
-
-                <option disabled>──────────────</option>
 
                 <optgroup label="Cloud & DevOps">
                     <option value="Cloud Engineer">Cloud Engineer</option>
                     <option value="DevOps">DevOps</option>
                 </optgroup>
 
-                <option disabled>──────────────</option>
-
                 <optgroup label="Testing & QA">
                     <option value="Quality Assurance">Quality Assurance</option>
                 </optgroup>
-
-                <option disabled>──────────────</option>
 
                 <optgroup label="Business & Support">
                     <option value="Business Analyst (Tech)">Business Analyst (Tech)</option>
                     <option value="Technical Support Engineer">Technical Support Engineer</option>
                 </optgroup>
-
-                <option disabled>──────────────</option>
 
                 <optgroup label="Networking">
                     <option value="Network Engineer">Network Engineer</option>
@@ -75,12 +61,15 @@
             <label>Difficulty</label>
             <select name="difficulty" required>
                 <option>Easy</option>
-                <option>Medium</option>
+                <option selected>Medium</option>
                 <option>Hard</option>
             </select>
 
             <label>Total Questions</label>
-            <input type="number" name="num_questions" value="10" min="10" max="100" required>
+            <input type="number" name="num_questions" value="10" min="10" max="50" required>
+
+            <!-- STATUS MESSAGE -->
+            <p id="statusMessage" class="status-message hidden"></p>
 
             <button type="submit" id="generateBtn">Generate & Download</button>
         </form>
@@ -102,11 +91,13 @@
 const form = document.getElementById("mcqForm");
 const loader = document.getElementById("loader");
 const btn = document.getElementById("generateBtn");
+const statusMessage = document.getElementById("statusMessage");
 
 const progressBar = document.getElementById("progressBar");
 const progressText = document.getElementById("progressText");
 
 let progress = 0;
+let interval = null;
 
 const stages = [
     { limit: 20, text: "Analyzing topics..." },
@@ -143,8 +134,10 @@ form.addEventListener("submit", async function (e) {
     btn.disabled = true;
     btn.innerText = "Generating...";
 
+    statusMessage.classList.add("hidden");
+
     progress = 0;
-    const interval = simulateProgress();
+    interval = simulateProgress();
 
     const formData = new FormData(form);
 
@@ -160,9 +153,7 @@ form.addEventListener("submit", async function (e) {
 
         const blob = await response.blob();
 
-        //  Extract filename from backend
         const contentDisposition = response.headers.get("Content-Disposition");
-
         let filename = "mcqs.xlsx";
 
         if (contentDisposition && contentDisposition.includes("filename")) {
@@ -172,12 +163,10 @@ form.addEventListener("submit", async function (e) {
             }
         }
 
-        // Safety fix
         if (!filename.endsWith(".xlsx")) {
             filename += ".xlsx";
         }
 
-        // Download
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
 
@@ -192,21 +181,47 @@ form.addEventListener("submit", async function (e) {
             a.remove();
         }, 100);
 
+        // SUCCESS
         clearInterval(interval);
         updateUI(100);
         progressText.innerText = "Download Complete 🎉";
 
-    } catch (err) {
-        progressText.innerText = "Error occurred ❌";
-    } finally {
+        statusMessage.classList.remove("hidden");
+        statusMessage.classList.remove("status-error");
+        statusMessage.classList.add("status-success");
+        statusMessage.innerText = "Download Complete 🎉";
+
         setTimeout(() => {
-            loader.classList.add("hidden");
-            btn.disabled = false;
-            btn.innerText = "Generate & Download";
-            progressBar.style.width = "0%";
-        }, 1500);
+            resetUI();
+        }, 3000);
+
+    } catch (err) {
+        // ERROR
+        clearInterval(interval);
+        progressText.innerText = "Error occurred ❌";
+
+        statusMessage.classList.remove("hidden");
+        statusMessage.classList.remove("status-success");
+        statusMessage.classList.add("status-error");
+        statusMessage.innerText = "Error occurred ❌";
+
+        setTimeout(() => {
+            resetUI();
+        }, 3500);
     }
 });
+
+function resetUI() {
+    loader.classList.add("hidden");
+    btn.disabled = false;
+    btn.innerText = "Generate & Download";
+    progressBar.style.width = "0%";
+    progressText.innerText = "Starting...";
+
+    setTimeout(() => {
+        statusMessage.classList.add("hidden");
+    }, 3000);
+}
 </script>
 
 </body>

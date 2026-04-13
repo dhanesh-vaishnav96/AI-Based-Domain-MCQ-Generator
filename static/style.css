@@ -1,22 +1,26 @@
+/* RESET */
 body {
     font-family: Arial, sans-serif;
     background: #f5f6fa;
     margin: 0;
 }
 
+/* CONTAINER */
 .container {
     width: 90%;
     max-width: 500px;
     margin: 80px auto;
 }
 
+/* CARD */
 .card {
     background: white;
     padding: 30px;
     border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
 
+/* TEXT */
 h1 {
     text-align: center;
     margin-bottom: 5px;
@@ -28,20 +32,24 @@ h1 {
     margin-bottom: 25px;
 }
 
+/* FORM */
 label {
     display: block;
     margin-top: 15px;
     font-weight: bold;
 }
 
-select, input {
+select,
+input {
     width: 100%;
     padding: 10px;
     margin-top: 5px;
     border-radius: 6px;
     border: 1px solid #ccc;
+    font-size: 14px;
 }
 
+/* BUTTON */
 button {
     margin-top: 25px;
     width: 100%;
@@ -63,26 +71,52 @@ button:disabled {
     cursor: not-allowed;
 }
 
-/* LOADER */
+/* STATUS MESSAGE */
+.status-message {
+    margin-top: 15px;
+    text-align: center;
+    font-weight: 600;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+/* SUCCESS */
+.status-success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+/* ERROR */
+.status-error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* HIDDEN */
+.hidden {
+    display: none;
+}
+
+/* LOADER OVERLAY */
 .loader {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255,255,255,0.95);
+
+    background: rgba(255, 255, 255, 0.95);
+
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+
     z-index: 9999;
 }
 
-.hidden {
-    display: none;
-}
-
-/* Spinner */
+/* SPINNER */
 .spinner {
     width: 50px;
     height: 50px;
@@ -92,7 +126,7 @@ button:disabled {
     animation: spin 1s linear infinite;
 }
 
-/* Progress Bar */
+/* PROGRESS BAR */
 .progress-container {
     width: 300px;
     height: 10px;
@@ -105,11 +139,11 @@ button:disabled {
 .progress-bar {
     height: 100%;
     width: 0%;
-    background: linear-gradient(90deg, #2563eb, #60a5fa);
+    background: #2563eb;
     transition: width 0.3s ease;
 }
 
-/* Animated Text */
+/* PROGRESS TEXT */
 #progressText {
     margin-top: 15px;
     font-weight: 500;
@@ -117,11 +151,18 @@ button:disabled {
     animation: fadeText 1.5s infinite alternate;
 }
 
+/* ANIMATIONS */
 @keyframes spin {
-    100% { transform: rotate(360deg); }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 @keyframes fadeText {
-    from { opacity: 0.6; }
-    to { opacity: 1; }
+    from {
+        opacity: 0.6;
+    }
+    to {
+        opacity: 1;
+    }
 }

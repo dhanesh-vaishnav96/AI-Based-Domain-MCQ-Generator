@@ -1,13 +1,14 @@
 from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment
 from tempfile import NamedTemporaryFile
+
 def generate_excel(mcqs: list):
     wb = Workbook()
     ws = wb.active
     ws.title = "MCQs"
 
     headers = [
-        "Question",
+        "Questions",
         "Option A",
         "Option B",
         "Option C",
@@ -26,13 +27,21 @@ def generate_excel(mcqs: list):
 
     # Data rows
     for mcq in mcqs:
+        # Get answer key (like "option_c")
+        answer_key = mcq.get("answer")
+
+        if answer_key in ["option_a", "option_b", "option_c", "option_d"]:
+            correct_answer_text = mcq.get(answer_key, "")
+        else:
+            correct_answer_text = "Invalid Answer"
+
         ws.append([
             mcq.get("question"),
             mcq.get("option_a"),
             mcq.get("option_b"),
             mcq.get("option_c"),
             mcq.get("option_d"),
-            mcq.get("answer"),
+            correct_answer_text,  
             mcq.get("difficulty"),
             mcq.get("points")
         ])
