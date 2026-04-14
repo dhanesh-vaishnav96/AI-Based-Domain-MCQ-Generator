@@ -1,241 +1,320 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI-MCQ-Generator</title>
-
-    <!-- CACHE FIX -->
-    <link rel="stylesheet" href="/static/style.css?v=5">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 
 <body>
 
-<div class="container">
-    <div class="card">
-        <h1>AI-Based Question Generator</h1>
-        <p class="subtitle">Generate MCQs & Download Instantly</p>
+    <div class="page-wrap">
 
-        <form id="mcqForm">
+        <div class="brand-header">
+            <img src="https://thoughtleadership.kadellabs.com/wp-content/uploads/2023/09/log-kl.png" alt="Kadell Labs"
+                class="brand-logo" onerror="this.style.display='none'">
+            <div class="top-label">
+                <div class="dot"></div>
+                <span>AI-Powered &mdash; Instant Generation</span>
+            </div>
+        </div>
 
-            <label>Domain</label>
-            <select name="domain" required>
-                <option value="" disabled selected>Select Domain</option>
+        <div class="card">
+            <div class="card-header">
+                <h1>Question <span>Generator</span></h1>
+                <p>Pick domain, difficulty &amp; count — get a ready Excel file.</p>
+            </div>
 
-                <optgroup label="Programming Languages">
-                    <option value="Python">Python</option>
-                    <option value="Java">Java</option>
-                    <option value="PHP Developer">PHP Developer</option>
-                    <option value=".NET Developer">.NET Developer</option>
-                </optgroup>
+            <form id="mcqForm">
 
-                <optgroup label="Full Stack / Web Development">
-                    <option value="MERN Developer">MERN Developer</option>
-                </optgroup>
+                <div class="form-group">
+                    <span class="form-label">Domain</span>
+                    <select name="domain" required>
+                        <option value="" disabled selected>Select a domain&hellip;</option>
+                        <optgroup label="Programming Languages">
+                            <option value="Python">Python</option>
+                            <option value="Java">Java</option>
+                            <option value="PHP Developer">PHP Developer</option>
+                            <option value=".NET Developer">.NET Developer</option>
+                        </optgroup>
+                        <optgroup label="Full Stack / Web Development">
+                            <option value="MERN Developer">MERN Developer</option>
+                        </optgroup>
+                        <optgroup label="AI / Machine Learning">
+                            <option value="Gen-AI Engineer">Gen-AI Engineer</option>
+                            <option value="AI/ML Engineer">AI/ML Engineer</option>
+                        </optgroup>
+                        <optgroup label="Data Engineering">
+                            <option value="Data Engineer">Data Engineer</option>
+                        </optgroup>
+                        <optgroup label="Cloud & DevOps">
+                            <option value="Cloud Engineer">Cloud Engineer</option>
+                            <option value="DevOps">DevOps</option>
+                        </optgroup>
+                        <optgroup label="Testing & QA">
+                            <option value="Quality Assurance">Quality Assurance</option>
+                        </optgroup>
+                        <optgroup label="Business & Support">
+                            <option value="Business Analyst (Tech)">Business Analyst (Tech)</option>
+                            <option value="Technical Support Engineer">Technical Support Engineer</option>
+                        </optgroup>
+                        <optgroup label="Networking">
+                            <option value="Network Engineer">Network Engineer</option>
+                        </optgroup>
+                    </select>
+                </div>
 
-                <optgroup label="AI / Machine Learning">
-                    <option value="Gen-AI Engineer">Gen-AI Engineer</option>
-                    <option value="AI/ML Engineer">AI/ML Engineer</option>
-                </optgroup>
+                <div class="form-group">
+                    <span class="form-label">Difficulty</span>
+                    <div class="pill-row">
+                        <input class="pill-input" type="radio" name="difficulty" id="d-easy" value="Easy" checked>
+                        <label class="pill-label" for="d-easy">Easy</label>
+                        <input class="pill-input" type="radio" name="difficulty" id="d-medium" value="Medium">
+                        <label class="pill-label" for="d-medium">Medium</label>
+                        <input class="pill-input" type="radio" name="difficulty" id="d-hard" value="Hard">
+                        <label class="pill-label" for="d-hard">Hard</label>
+                    </div>
+                </div>
 
-                <optgroup label="Data Engineering">
-                    <option value="Data Engineer">Data Engineer</option>
-                </optgroup>
+                <div class="form-group">
+                    <span class="form-label">Total Questions</span>
+                    <input type="number" name="num_questions" value="10" min="10" max="50" required>
+                </div>
 
-                <optgroup label="Cloud & DevOps">
-                    <option value="Cloud Engineer">Cloud Engineer</option>
-                    <option value="DevOps">DevOps</option>
-                </optgroup>
+                <button type="submit" class="btn-generate" id="generateBtn">
+                    <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
+                        <path d="M8.5 2v9M4.5 7.5l4 4 4-4M2.5 14.5h12" stroke="currentColor" stroke-width="1.75"
+                            stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    Generate &amp; Download
+                </button>
+            </form>
 
-                <optgroup label="Testing & QA">
-                    <option value="Quality Assurance">Quality Assurance</option>
-                </optgroup>
-
-                <optgroup label="Business & Support">
-                    <option value="Business Analyst (Tech)">Business Analyst (Tech)</option>
-                    <option value="Technical Support Engineer">Technical Support Engineer</option>
-                </optgroup>
-
-                <optgroup label="Networking">
-                    <option value="Network Engineer">Network Engineer</option>
-                </optgroup>
-            </select>
-
-            <label>Difficulty</label>
-            <select name="difficulty" required>
-                <option value="" disabled selected>Select Difficulty</option>
-                <option value="Easy">Easy</option>
-                <option value="Medium">Medium</option>
-                <option value="Hard">Hard</option>
-            </select>
-
-            <label>Total Questions</label>
-            <input type="number" name="num_questions" value="10" min="10" max="50" required>
-
-            <!-- STATUS MESSAGE -->
-            <p id="statusMessage" class="status-message hidden"></p>
-
-            <button type="submit" id="generateBtn">Generate & Download</button>
-        </form>
+            <p class="footer-note">File downloads automatically as .xlsx</p>
+        </div>
     </div>
-</div>
 
-<!-- LOADER (FORCE HIDDEN) -->
-<div id="loader" class="loader hidden" style="display:none;">
-    <div class="spinner"></div>
+    <!-- LOADER OVERLAY -->
+    <div id="loader">
+        <div class="loader-card">
 
-    <div class="progress-container">
-        <div id="progressBar" class="progress-bar"></div>
+            <div class="anim-scene" id="animScene">
+                <div class="orbit-ring">
+                    <div class="orb orb-green"></div>
+                </div>
+                <div class="orbit-ring-rev">
+                    <div class="orb orb-dark"></div>
+                </div>
+                <div class="excel-file">
+                    <div class="excel-header">
+                        <div class="excel-cell"></div>
+                        <div class="excel-cell"></div>
+                        <div class="excel-cell"></div>
+                    </div>
+                    <div class="excel-body">
+                        <div class="excel-line"></div>
+                        <div class="excel-line"></div>
+                        <div class="excel-line"></div>
+                        <div class="excel-line"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="success-wrap" id="successWrap">
+                <svg width="26" height="26" viewBox="0 0 26 26" fill="none">
+                    <path d="M5 13l6 6L21 7" stroke="#0E2D7B" stroke-width="2.5" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                </svg>
+            </div>
+
+
+
+            <div class="pct-row"><span id="pctLabel">0%</span></div>
+            <div class="progress-track">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <div class="steps">
+                <div class="step" id="st1">
+                    <div class="step-bubble" id="sb1">1</div><span class="step-name">Analyze</span>
+                </div>
+                <div class="step-line" id="sl1"></div>
+                <div class="step" id="st2">
+                    <div class="step-bubble" id="sb2">2</div><span class="step-name">Generate</span>
+                </div>
+                <div class="step-line" id="sl2"></div>
+                <div class="step" id="st3">
+                    <div class="step-bubble" id="sb3">3</div><span class="step-name">Validate</span>
+                </div>
+                <div class="step-line" id="sl3"></div>
+                <div class="step" id="st4">
+                    <div class="step-bubble" id="sb4">4</div><span class="step-name">Create</span>
+                </div>
+                <div class="step-line" id="sl4"></div>
+                <div class="step" id="st5">
+                    <div class="step-bubble" id="sb5">5</div><span class="step-name">Done</span>
+                </div>
+            </div>
+
+            <div class="stage-title" id="stageTitle" style="margin-top: 1.7rem;">Preparing&hellip;</div>
+            <div class="stage-sub" id="stageSub" style="margin-bottom: 0;">Warming up the AI engine</div>
+
+        </div>
     </div>
 
-    <p id="progressText">Initializing...</p>
-</div>
+    <script>
+        (function () {
+            var form = document.getElementById('mcqForm');
+            var loader = document.getElementById('loader');
+            var btn = document.getElementById('generateBtn');
+            var bar = document.getElementById('progressBar');
+            var pctLbl = document.getElementById('pctLabel');
+            var titleEl = document.getElementById('stageTitle');
+            var subEl = document.getElementById('stageSub');
+            var animScene = document.getElementById('animScene');
+            var successWrap = document.getElementById('successWrap');
 
-<script>
-const form = document.getElementById("mcqForm");
-const loader = document.getElementById("loader");
-const btn = document.getElementById("generateBtn");
-const statusMessage = document.getElementById("statusMessage");
+            var raf = null;
+            var cur = 0;
 
-const progressBar = document.getElementById("progressBar");
-const progressText = document.getElementById("progressText");
+            var STAGES = [
+                { min: 0, max: 20, title: 'Analyzing topics...', sub: '', step: 1 },
+                { min: 20, max: 65, title: 'Generating MCQs...', sub: '', step: 2 },
+                { min: 65, max: 80, title: 'Validating questions...', sub: '', step: 3 },
+                { min: 80, max: 95, title: 'Creating Excel file...', sub: '', step: 4 },
+                { min: 95, max: 100, title: 'Downloaded...', sub: '', step: 5 }
+            ];
 
-let progress = 0;
-let interval = null;
+            var CHECK = '<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 6.5l3.5 3.5 5.5-5.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
-/* FORCE loader hidden on page load */
-document.addEventListener("DOMContentLoaded", function () {
-    loader.classList.add("hidden");
-    loader.style.display = "none";
-});
+            function setStep(active) {
+                for (var i = 1; i <= 5; i++) {
+                    var st = document.getElementById('st' + i);
+                    var sb = document.getElementById('sb' + i);
+                    if (i < active) {
+                        st.className = 'step done'; sb.className = 'step-bubble done'; sb.innerHTML = CHECK;
+                        if (i < 5) document.getElementById('sl' + i).className = 'step-line done';
+                    } else if (i === active) {
+                        st.className = 'step active'; sb.className = 'step-bubble active'; sb.textContent = i;
+                        if (i < 5) document.getElementById('sl' + i).className = 'step-line';
+                    } else {
+                        st.className = 'step'; sb.className = 'step-bubble'; sb.textContent = i;
+                        if (i < 5) document.getElementById('sl' + i).className = 'step-line';
+                    }
+                }
+            }
 
-/* Progress stages */
-const stages = [
-    { limit: 20, text: "Connecting to server..." },
-    { limit: 40, text: "Analyzing topics..." },
-    { limit: 65, text: "Generating MCQs..." },
-    { limit: 85, text: "Validating questions..." },
-    { limit: 100, text: "Creating Excel file..." }
-];
+            function applyPct(p) {
+                p = Math.min(100, Math.max(0, p));
+                bar.style.width = p + '%';
+                pctLbl.textContent = Math.round(p) + '%';
+                for (var i = 0; i < STAGES.length; i++) {
+                    var s = STAGES[i];
+                    if (p >= s.min && p <= s.max) {
+                        titleEl.textContent = s.title;
+                        subEl.textContent = s.sub;
+                        setStep(s.step);
+                        break;
+                    }
+                }
+            }
 
-/* Smooth progress */
-function simulateProgress() {
-    progress = 10;
-    updateUI(progress);
+            function animTo(target, ms, done) {
+                cancelAnimationFrame(raf);
+                var from = cur, t0 = performance.now();
+                function tick(now) {
+                    var p = Math.min((now - t0) / ms, 1);
+                    var ease = 1 - Math.pow(1 - p, 3);
+                    cur = from + (target - from) * ease;
+                    applyPct(cur);
+                    if (p < 1) { raf = requestAnimationFrame(tick); }
+                    else { cur = target; if (done) done(); }
+                }
+                raf = requestAnimationFrame(tick);
+            }
 
-    return setInterval(() => {
-        if (progress < 90) {
-            progress += 2;
-            updateUI(progress);
-        }
-    }, 500);
-}
+            function reset() {
+                cur = 0; bar.style.width = '0%'; bar.style.background = '#0E2D7B';
+                pctLbl.textContent = '0%';
+                titleEl.textContent = 'Preparing\u2026';
+                subEl.textContent = 'Warming up the AI engine';
+                animScene.style.display = 'block';
+                successWrap.className = 'success-wrap';
+                for (var i = 1; i <= 5; i++) {
+                    var st = document.getElementById('st' + i);
+                    var sb = document.getElementById('sb' + i);
+                    st.className = 'step'; sb.className = 'step-bubble'; sb.textContent = i;
+                    if (i < 5) document.getElementById('sl' + i).className = 'step-line';
+                }
+            }
 
-/* Update UI */
-function updateUI(value) {
-    progressBar.style.width = value + "%";
+            function showSuccess() {
+                animScene.style.display = 'none';
+                successWrap.className = 'success-wrap show';
+                titleEl.textContent = 'Download Complete!';
+                subEl.textContent = 'Your Excel file is ready \u2713';
+            }
 
-    for (let stage of stages) {
-        if (value <= stage.limit) {
-            progressText.innerText = stage.text;
-            break;
-        }
-    }
-}
+            var BTN_DEFAULT = '<svg width="17" height="17" viewBox="0 0 17 17" fill="none"><path d="M8.5 2v9M4.5 7.5l4 4 4-4M2.5 14.5h12" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg> Generate &amp; Download';
 
-/* Form submit */
-form.addEventListener("submit", async function (e) {
-    e.preventDefault();
+            form.addEventListener('submit', function (e) {
+                e.preventDefault();
+                reset();
+                loader.classList.add('active');
+                btn.disabled = true;
+                btn.textContent = 'Generating\u2026';
 
-    /* SHOW LOADER */
-    loader.classList.remove("hidden");
-    loader.style.display = "flex";
+                animTo(20, 500, function () { animTo(92, 14000); });
 
-    btn.disabled = true;
-    btn.innerText = "Generating...";
-
-    statusMessage.classList.add("hidden");
-    statusMessage.classList.remove("status-success", "status-error");
-
-    progress = 0;
-    interval = simulateProgress();
-
-    const formData = new FormData(form);
-
-    try {
-        const response = await fetch("/api/v1/mcq/generate-download", {
-            method: "POST",
-            body: formData
-        });
-
-        if (!response.ok) {
-            throw new Error("Server error");
-        }
-
-        const blob = await response.blob();
-
-        let filename = "mcqs.xlsx";
-        const contentDisposition = response.headers.get("Content-Disposition");
-
-        if (contentDisposition && contentDisposition.includes("filename")) {
-            const match = contentDisposition.match(/filename="?([^"]+)"?/);
-            if (match) filename = match[1];
-        }
-
-        /* DOWNLOAD FILE */
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-
-        a.href = url;
-        a.setAttribute("download", filename);
-        document.body.appendChild(a);
-        a.click();
-
-        setTimeout(() => {
-            window.URL.revokeObjectURL(url);
-            a.remove();
-        }, 100);
-
-        /* SUCCESS */
-        clearInterval(interval);
-        updateUI(100);
-        progressText.innerText = "Download Complete 🎉";
-
-        statusMessage.classList.remove("hidden");
-        statusMessage.classList.add("status-success");
-        statusMessage.innerText = "Download Complete 🎉";
-
-        setTimeout(() => resetUI(), 3000);
-
-    } catch (err) {
-
-        /* ERROR */
-        clearInterval(interval);
-        progressText.innerText = "Error occurred ❌";
-
-        statusMessage.classList.remove("hidden");
-        statusMessage.classList.add("status-error");
-        statusMessage.innerText = "Error occurred ❌";
-
-        setTimeout(() => resetUI(), 3500);
-    }
-});
-
-/* Reset UI */
-function resetUI() {
-    loader.classList.add("hidden");
-    loader.style.display = "none";
-
-    btn.disabled = false;
-    btn.innerText = "Generate & Download";
-
-    progressBar.style.width = "0%";
-    progressText.innerText = "Initializing...";
-
-    setTimeout(() => {
-        statusMessage.classList.add("hidden");
-    }, 3000);
-}
-</script>
+                fetch('/api/v1/mcq/generate-download', { method: 'POST', body: new FormData(form) })
+                    .then(function (res) {
+                        if (!res.ok) throw new Error('Server error ' + res.status);
+                        return res.blob().then(function (blob) { return { blob: blob, hdrs: res.headers }; });
+                    })
+                    .then(function (data) {
+                        cancelAnimationFrame(raf);
+                        animTo(100, 450, function () {
+                            setTimeout(function () {
+                                showSuccess();
+                                var cd = data.hdrs.get('Content-Disposition') || '';
+                                var fn = 'mcqs.xlsx';
+                                var m = cd.match(/filename="?([^";\n]+)"?/);
+                                if (m) fn = m[1].trim();
+                                if (!fn.endsWith('.xlsx')) fn += '.xlsx';
+                                var url = URL.createObjectURL(data.blob);
+                                var a = document.createElement('a');
+                                a.href = url; a.download = fn;
+                                document.body.appendChild(a); a.click();
+                                setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 150);
+                                setTimeout(function () {
+                                    loader.classList.remove('active');
+                                    btn.disabled = false;
+                                    btn.innerHTML = BTN_DEFAULT;
+                                }, 2400);
+                            }, 250);
+                        });
+                    })
+                    .catch(function (err) {
+                        cancelAnimationFrame(raf);
+                        bar.style.background = '#e24b4a';
+                        titleEl.textContent = 'Something went wrong';
+                        subEl.textContent = err.message || 'Please try again';
+                        setTimeout(function () {
+                            loader.classList.remove('active');
+                            btn.disabled = false;
+                            btn.innerHTML = BTN_DEFAULT;
+                        }, 2600);
+                    });
+            });
+        })();
+    </script>
 
 </body>
+
 </html>
